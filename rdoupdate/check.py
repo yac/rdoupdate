@@ -22,7 +22,7 @@ def check_git(dir):
             os.chdir(dir)
         except OSError:
             raise exception.ChdirError(dir=dir)
-    out = sh.run('git diff --name-status HEAD~').strip()
+    out = sh.run('git diff --name-status HEAD~..HEAD').strip()
     if out.find("\n") != -1:
         raise exception.InvalidUpdateCommit(msg="Update commit changes more than one file.")
     m = re.match('^([A-Z])\s+(\S+)$', out)
