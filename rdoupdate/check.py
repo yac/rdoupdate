@@ -68,7 +68,7 @@ in current directory is assumed by default (-g .)")
         error("file error", e, 3)
     except exception.CommandFailed as e:
         error("command failed", e.kwargs['cmd'], 5)
-    except yaml.parser.ParserError as e:
+    except (yaml.parser.ParserError, yaml.scanner.ScannerError) as e:
         error("invalid YAML", e, 7)
     except exception.InvalidUpdateStructure as e:
         error("invalid structure", e, 11)
