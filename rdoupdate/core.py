@@ -3,7 +3,7 @@
 import exception
 
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 
 class UpdateObject(object):
@@ -75,6 +75,31 @@ class Update(UpdateObject):
         d = super(Update, self).as_dict()
         d['builds'] = map(lambda x: x.as_dict(), d['builds'])
         return d
+
+    def update_file(self, hints=True):
+        s = '---\n'
+        if self.comment:
+            s += yaml.dump({'comment': self.comment})
+        else:
+            if hints:
+                s += """## You may add a comment describing this update, for example:
+#comment: |
+#         Description of this mighty update
+#         with "quotes" and stuff.
+"""
+        s += 'builds:\n'
+        for b in self.builds:
+            s += '   - id: %s\n     repo: %s\n     dist: %s\n' % (b.id, b.repo,
+                                                                  b.dist)
+        if hints:
+            s += """## You can add more builds here like this:
+#   - id: python-awesomepackage-3.14-1.el6
+#     repo: havana
+#     dist: epel-6
+#
+## Commented lines will be deleted
+"""
+        return s
 
     def summary(self):
         s = "\n".join(map(lambda b: '%s -> %s / %s' % (b.id, b.repo, b.dist), self.builds))
