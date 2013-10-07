@@ -65,7 +65,11 @@ class Update(UpdateObject):
 
     def load_dict(self, data):
         super(Update, self).load_dict(data)
-        self.builds = map(Build, self.builds)
+        def _buildize(b):
+            if isinstance(b, Build):
+                return b
+            return Build(b)
+        self.builds = map(_buildize, self.builds)
 
     def as_dict(self):
         d = super(Update, self).as_dict()
