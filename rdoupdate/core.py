@@ -3,7 +3,7 @@
 import exception
 
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 
 class UpdateObject(object):
@@ -57,6 +57,9 @@ class Build(UpdateObject):
     name = 'build'
     required_attrs = ['id', 'repo', 'dist']
 
+    def __str__(self):
+        return '%s -> %s / %s' % (self.id, self.repo, self.dist)
+
 
 class Update(UpdateObject):
     name = 'update'
@@ -102,7 +105,7 @@ class Update(UpdateObject):
         return s
 
     def summary(self):
-        s = "\n".join(map(lambda b: '%s -> %s / %s' % (b.id, b.repo, b.dist), self.builds))
+        s = "\n".join(map(str, self.builds))
         if self.comment:
             s += "\n---\n%s" % self.comment
         return s
