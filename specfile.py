@@ -76,6 +76,26 @@ class Spec(object):
             new_base = "%s%s" % (version, base[p:])
         self.set_patches_base(new_base)
 
+    def get_n_patches(self):
+        return len(re.findall(r'^Patch[0-9]+:', self.txt, flags=re.M))
+
+    def get_n_excluded_patches(self):
+        """
+        Gets number of excluded patches from patches_base:
+        #patches_base=1.0.0+THIS_NUMBER
+        """
+        base = self.get_patches_base()
+        if not base:
+            return 0
+        p = base.rfind('+')
+        if p == -1:
+            return 0
+        try:
+            n = int(base[p+1:])
+            return n
+        except TypeError:
+            return 0
+
     def _get_release_parts(self):
         release = self.get_tag('Release')
         m = re.match('([\d.]*\d)(.*)', release)

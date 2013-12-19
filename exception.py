@@ -15,3 +15,23 @@ class RdopkgException(Exception):
 
 class CommandFailed(RdopkgException):
     msg_fmt = "Command failed: %(cmd)s"
+
+
+class SpecFileNotFound(RdopkgException):
+    msg_fmt = "No .spec files found."
+
+
+class IncompleteChangelog(RdopkgException):
+    msg_fmt = "Description of changes is missing in %changelog."
+
+
+class MultipleSpecFilesFound(RdopkgException):
+    msg_fmt = "Multiple .spec files found. Expected only one."
+
+
+class SpecFileParseError(RdopkgException):
+    msg_fmt = "Error parsing .spec file '%(spec_fn)s': %(error)s"
+
+
+class InvalidAction(RdopkgException):
+    msg_fmt = "Invalid action: %(action)s"

@@ -116,21 +116,24 @@ class Git(ShellCommand):
                             remote_branch)
         self.create_branch(branch, remote_branch)
 
-    def _format_output(self, out):
-        out = out.split("\n")
-        out = [l.strip() for l in out if l and l.find('HEAD') < 0]
+    def _parse_output(self, out):
+        output = [l.strip() for l in out.split("\n") if l]
+        return output
+
+    def _parse_branch_output(self, out):
+        output = [l for l in self._parse_output(out) if l.find('HEAD') < 0]
         return out
 
     def remote_branches(self, remote=""):
         res = self("branch", "-r")
-        branches = self._format_output(res)
+        branches = self._parse_branch_output(res)
         branches = [b.replace("remotes/", "") \
                     for b in branches if b.startswith(remote)]
         return branches
 
     def local_branches(self):
         res = self("branch")
-        res = self._format_output(res)
+        res = self._parse_branch_output(res)
         res = [b.replace("* ", "") for b in res]
         return res
 
@@ -146,7 +149,7 @@ class Git(ShellCommand):
 
     def remotes(self):
         res = self("remote", "show")
-        return self._format_output(res)
+        return self._parse_branch_output(res)
 
     def delete_branch(self, branch):
         self('branch', '-D', branch)
@@ -172,10 +175,15 @@ class Git(ShellCommand):
         self('rebase', starting_point)
 
     def get_commits_from_revision(self, revision):
-        res = self('log', '--oneline', revision + '..')
-        res = self._format_output(res)
-        res = [l.split()[0] for l in res]
-        return res
+        log_out = self('log', '--format=%h', revision + '..')
+        return self._parse_output(log_out)
+
+    def get_commit_subjects(self, from_revision, to_revision=None):
+        range = from_revision + '..'
+        if to_revision:
+            range += to_revision
+        log_out = self('log', '--format=%s', range)
+        return self._parse_output(log_out)
 
     def config_get(self, param):
         return self("config", "--get", param)
