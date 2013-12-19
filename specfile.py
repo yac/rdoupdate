@@ -1,10 +1,10 @@
-import exception
-
 import codecs
 import os
 import re
 import rpm
 import time
+
+import exception
 
 
 def spec_fn(spec_dir='.'):
