@@ -33,5 +33,14 @@ class SpecFileParseError(RdopkgException):
     msg_fmt = "Error parsing .spec file '%(spec_fn)s': %(error)s"
 
 
+class ModuleNotAvailable(RdopkgException):
+    msg_fmt = "Module %(module)s is not available. Unable to continue."
+
+
+class RpmModuleNotAvailable(ModuleNotAvailable):
+    msg_fmt = ("Module rpm is not available. It is required to parse .spec "
+               "files. Pro tip: `yum install rpm-python`")
+
+
 class InvalidAction(RdopkgException):
     msg_fmt = "Invalid action: %(action)s"
