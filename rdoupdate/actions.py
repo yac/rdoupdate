@@ -1,12 +1,12 @@
-import core
-import exception
-import sh
-
 import argparse
 import os
 import re
 import sys
 import yaml
+
+import core
+import exception
+from utils.cmd import run, git
 
 
 def check_file(stream):
@@ -22,22 +22,20 @@ def check_git(dir):
             os.chdir(dir)
         except OSError:
             raise exception.ChdirError(dir=dir)
-    out = sh.run('git diff --name-status HEAD~..HEAD').strip()
+    out = git('diff', '--name-status', 'HEAD~..HEAD').strip()
     if out.find("\n") != -1:
-        raise exception.InvalidUpdateCommit(msg="Update commit changes more than one file.")
+        raise exception.InvalidUpdateCommit(
+            msg="Update commit changes more than one file.")
     m = re.match('^([A-Z])\s+(\S+)$', out)
     if not m:
         raise exception.ParsingError(what="git diff output", str=out)
     status = m.group(1)
     if status != 'A' and status != 'M':
-        raise exception.InvalidUpdateCommit(msg="Invalid file status %s, should be A(dded) or M(odified)" % status)
+        raise exception.InvalidUpdateCommit(
+            msg=("Invalid file status %s, should be A(dded) or M(odified)" %
+                 status))
     fn = m.group(2)
     return check_file(fn)
-
-
-def error(errtype, msg, code=42):
-    sys.stderr.write("[ERROR] %s: %s\n" % (errtype, msg))
-    sys.exit(code)
 
 
 def main():

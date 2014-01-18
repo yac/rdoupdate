@@ -7,12 +7,12 @@ from rdoupdate.core import VERSION
 setuptools.setup(
     name='rdoupdate',
     version=VERSION,
-    description='module for parsing and creating YAML update files',
+    description='managing special packaging/update repository',
     author='Jakub Ruzicka',
     author_email='jruzicka@redhat.com',
     url='https://github.com/yac/rdoupdate',
-    packages=['rdoupdate'],
+    packages=['rdoupdate', 'rdoupdate.utils'],
     entry_points={
-        "console_scripts": ["rdoupdate-check = rdoupdate.check:main"]
+        "console_scripts": ["rdoupdate = rdoupdate.shell:main"]
     }
 )
