@@ -3,9 +3,6 @@
 import exception
 
 
-VERSION = '0.4'
-
-
 class UpdateObject(object):
     """
     Abstract class providing initialization from and export to dict.

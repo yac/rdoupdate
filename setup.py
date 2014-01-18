@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import setuptools
-from rdoupdate.core import VERSION
+from rdoupdate import VERSION
 
 
 setuptools.setup(

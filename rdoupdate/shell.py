@@ -4,6 +4,7 @@ import argparse
 import sys
 import yaml
 
+from . import VERSION
 import actions
 import core
 import exception
@@ -17,7 +18,7 @@ def error(errtype, msg, code=42):
 def get_parser():
     parser = argparse.ArgumentParser(prog='rdopkg')
     subparsers = parser.add_subparsers(help='available actions')
-    parser.add_argument('--version', action='version', version=core.VERSION)
+    parser.add_argument('--version', action='version', version=VERSION)
     # check
     check_parser = subparsers.add_parser(
         'check', help="validate an update file",
