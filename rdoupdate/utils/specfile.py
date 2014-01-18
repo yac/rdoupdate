@@ -1,8 +1,14 @@
 import codecs
 import os
 import re
-import rpm
 import time
+
+RPM_AVAILABLE = False
+try:
+    import rpm
+    RPM_AVAILABLE = True
+except ImportError:
+    pass
 
 import exception
 
@@ -41,10 +47,13 @@ class Spec(object):
     @property
     def rpmspec(self):
         if not self._rpmspec:
+            if not RPM_AVAILABLE:
+                raise exception.RpmModuleNotAvailable()
             try:
                 self._rpmspec = rpm.ts().parseSpec(self.fn)
             except ValueError, e:
-                return {'error': "Error parsing '%s': %s" % (self.fn, e.args[0])}
+                raise exception.SpecFileParseError(spec_fn=self.fn,
+                                                   error=e.args[0])
         return self._rpmspec
 
     def get_tag(self, tag):
