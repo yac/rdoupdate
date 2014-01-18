@@ -1,12 +1,11 @@
-import argparse
 import os
 import re
-import sys
+import shutil
 import yaml
 
 import core
 import exception
-from utils.cmd import run, git
+from utils.cmd import git
 
 
 def check_file(stream):
@@ -38,46 +37,20 @@ def check_git(dir):
     return check_file(fn)
 
 
-def main():
-    epilog = """
-When no update file to check is specified using -g or -f, git repo
-in current directory is assumed by default (-g .)")
-"""
-    parser = argparse.ArgumentParser(epilog=epilog)
-    parser.add_argument('-g', '--git', type=str, metavar='DIR',
-                        help="check latest update file from git repository in DIR directory")
-    parser.add_argument('-f', '--file', type=str, metavar='FILE',
-                        help="check latest update file FILE; use - for stdin")
-    args = parser.parse_args()
-    if args.file and args.git:
-        print "Only one update file can be specified."
-        sys.exit(2)
-    try:
-        if args.file:
-            update = check_file(args.file)
-        else:
-            if not args.git:
-                args.git = '.'
-            update = check_git(args.git)
-        print update
-    except IOError as e:
-        error("file error", "%s: %s" % (e.strerror, e.filename), 2)
-    except exception.ChdirError as e:
-        error("file error", e, 3)
-    except exception.CommandFailed as e:
-        error("command failed", e.kwargs['cmd'], 5)
-    except (yaml.parser.ParserError, yaml.scanner.ScannerError) as e:
-        error("invalid YAML", e, 7)
-    except exception.InvalidUpdateStructure as e:
-        error("invalid structure", e, 11)
-    except exception.InvalidUpdateCommit as e:
-        error("invalid commit", e, 13)
-    except exception.ParsingError as e:
-        error("parsing error", e, 17)
-    except Exception as e:
-        err = type(e).__name__
-        ex = str(e)
-        if ex:
-            err += ": %s" % ex
-        error("unexpected error", err, 42)
+def move_files(files, to_dir):
+    if not os.path.exists(to_dir):
+        os.makedirs(to_dir)
+    n_files = len(files)
+    if n_files == 1:
+        msg = "Move %s to %s/" % (files[0], to_dir)
+    else:
+        msg = "Move %d files to %s/\n" % (n_files, to_dir)
+    for from_path in files:
+        bn = os.path.basename(from_path)
+        to_path = "%s/%s" % (to_dir, bn)
+        assert(from_path and to_path)
+        git('mv', from_path, to_path)
+        if n_files != 1:
+            msg += "\n%s" % from_path
+    git('commit', '-a', '-F', '-', input=msg, print_output=True)
 

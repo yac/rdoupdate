@@ -18,13 +18,30 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='rdopkg')
     subparsers = parser.add_subparsers(help='available actions')
     parser.add_argument('--version', action='version', version=core.VERSION)
+    # check
     check_parser = subparsers.add_parser(
-        'check', help="validate an update file")
-    check_parser.add_argument('-g', '--git', type=str, metavar='DIR',
+        'check', help="validate an update file",
+        description="validate an update file either added by latest git "
+                    "commit in current repo (-g, default) or manually "
+                    "selected (-f)")
+    check_parser.add_argument(
+        '-g', '--git', type=str, metavar='DIR',
         help="check latest update file from git repository in DIR directory")
-    check_parser.add_argument('-f', '--file', type=str, metavar='FILE',
+    check_parser.add_argument(
+        '-f', '--file', type=str, metavar='FILE',
         help="check latest update file FILE; use - for stdin")
     check_parser.set_defaults(action=do_check)
+    # move
+    move_parser = subparsers.add_parser(
+        'move', help="move an update file (create a commit)",
+        description="create a commit that moves selected files to a directory")
+    move_parser.add_argument(
+        'files', metavar='FILE', type=str, nargs='+',
+        help='update file(s) to move')
+    move_parser.add_argument(
+        '-d', '--dir', type=str, metavar='DIR', default="ready",
+        help="move update file(s) to this directory (default: ready)")
+    move_parser.set_defaults(action=do_move)
 
     return parser
 
@@ -39,7 +56,11 @@ def do_check(args):
         if not args.git:
             args.git = '.'
         update = actions.check_git(args.git)
-    print update
+    print(update)
+
+
+def do_move(args):
+    actions.move_files(args.files, args.dir)
 
 
 def main(cargs=None):
