@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import yaml
 
 import exception
 
@@ -53,9 +54,13 @@ class UpdateObject(object):
 class Build(UpdateObject):
     name = 'build'
     required_attrs = ['id', 'repo', 'dist']
+    optional_attrs = ['tag']
 
     def __str__(self):
-        return '%s -> %s / %s' % (self.id, self.repo, self.dist)
+        s = '%s -> %s / %s' % (self.id, self.repo, self.dist)
+        if self.tag:
+            s += ' [%s]' % self.tag
+        return s
 
 
 class Update(UpdateObject):
