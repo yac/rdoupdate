@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import yaml
 
+import const
 import exception
 
 
@@ -11,6 +12,7 @@ class UpdateObject(object):
     name = 'config'
     required_attrs = []
     optional_attrs = []
+    attr_defaults = {}
 
     def __init__(self, *args, **kwargs):
         """
@@ -30,7 +32,7 @@ class UpdateObject(object):
             if required:
                 raise exception.InvalidUpdateStructure(
                     msg="%s is missing argument: %s" % (self.name, attr))
-            val = None
+            val = self.attr_defaults.get('attr')
         else:
             val = data[attr]
         if required and not val:
@@ -54,7 +56,14 @@ class UpdateObject(object):
 class Build(UpdateObject):
     name = 'build'
     required_attrs = ['id', 'repo', 'dist']
-    optional_attrs = ['tag']
+    optional_attrs = ['tag', 'source']
+
+    def load_dict(self, data):
+        UpdateObject.load_dict(self, data)
+        if self.source and self.source not in const.BUILD_SOURCES:
+            raise exception.InvalidUpdateStructure(
+                msg="Invalid build source: %s (valid: %s)" %
+                    (self.source, " ".join(const.BUILD_SOURCES)))
 
     def __str__(self):
         s = '%s -> %s / %s' % (self.id, self.repo, self.dist)
