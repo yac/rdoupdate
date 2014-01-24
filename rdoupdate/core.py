@@ -3,6 +3,7 @@ import yaml
 
 import const
 import exception
+import os.path
 
 
 class UpdateObject(object):
@@ -32,7 +33,7 @@ class UpdateObject(object):
             if required:
                 raise exception.InvalidUpdateStructure(
                     msg="%s is missing argument: %s" % (self.name, attr))
-            val = self.attr_defaults.get('attr')
+            val = self.attr_defaults.get(attr)
         else:
             val = data[attr]
         if required and not val:
@@ -57,6 +58,7 @@ class Build(UpdateObject):
     name = 'build'
     required_attrs = ['id', 'repo', 'dist']
     optional_attrs = ['tag', 'source']
+    attr_defaults = {'source': const.DEFAULT_BUILD_SOURCE}
 
     def load_dict(self, data):
         UpdateObject.load_dict(self, data)
@@ -123,3 +125,10 @@ class Update(UpdateObject):
 
     def __str__(self):
         return self.summary()
+
+
+def pp_update(path):
+    pretty = os.path.splitext(path)[0]
+    if pretty.startswith('updates/'):
+        pretty = pretty[8:]
+    return pretty

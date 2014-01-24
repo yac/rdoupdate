@@ -42,15 +42,15 @@ def move_files(files, to_dir):
         os.makedirs(to_dir)
     n_files = len(files)
     if n_files == 1:
-        msg = "Move %s to %s/" % (files[0], to_dir)
+        msg = "Move %s to %s/" % (core.pp_update(files[0]), to_dir)
     else:
-        msg = "Move %d files to %s/\n" % (n_files, to_dir)
+        msg = "Move %d updates to %s/\n" % (n_files, to_dir)
     for from_path in files:
         bn = os.path.basename(from_path)
         to_path = "%s/%s" % (to_dir, bn)
         assert(from_path and to_path)
         git('mv', from_path, to_path)
         if n_files != 1:
-            msg += "\n%s" % from_path
+            msg += "\n%s" % core.pp_update(from_path)
     git('commit', '-a', '-F', '-', input=msg, print_output=True)
 
