@@ -142,13 +142,16 @@ class Git(ShellCommand):
         branch = self('rev-parse', '--abbrev-ref', 'HEAD', log_cmd=False)
         return branch
 
-    def branch_exists(self, branch):
-        o = self('show-ref', '--verify', '--quiet', 'refs/heads/%s' % branch,
+    def ref_exists(self, ref):
+        o = self('show-ref', '--verify', '--quiet', ref,
                  fatal=False, log_cmd=False)
         return o.success
 
+    def branch_exists(self, branch):
+        return self.ref_exists('refs/heads/%s' % branch)
+
     def remotes(self):
-        res = self("remote", "show")
+        res = self("remote", "show", log_cmd=False)
         return self._parse_branch_output(res)
 
     def delete_branch(self, branch):

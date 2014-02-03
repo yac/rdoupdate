@@ -31,6 +31,10 @@ class LogTerminal(Terminal):
         return self.red
 
     @property
+    def good(self):
+        return self.green
+
+    @property
     def cmd(self):
         return self.cyan
 
@@ -39,11 +43,27 @@ term = LogTerminal()
 
 
 def error(*args, **kwargs):
+    if args:
+        largs = list(args)
+        largs[0] = term.error(args[0])
+        args = tuple(largs)
     log.error(*args, **kwargs)
 
 
 def warn(*args, **kwargs):
+    if args:
+        largs = list(args)
+        largs[0] = term.warn(args[0])
+        args = tuple(largs)
     log.warning(*args, **kwargs)
+
+
+def success(*args, **kwargs):
+    if args:
+        largs = list(args)
+        largs[0] = term.good(args[0])
+        args = tuple(largs)
+    log.info(*args, **kwargs)
 
 
 def info(*args, **kwargs):

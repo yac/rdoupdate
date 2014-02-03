@@ -22,7 +22,7 @@ class SpecFileNotFound(RdopkgException):
 
 
 class IncompleteChangelog(RdopkgException):
-    msg_fmt = "Description of changes is missing in %changelog."
+    msg_fmt = "Description of changes is missing in %%changelog."
 
 
 class MultipleSpecFilesFound(RdopkgException):
