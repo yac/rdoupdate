@@ -17,5 +17,13 @@ class ChdirError(RdopkgException):
     msg_fmt = "Failed to change directory: %(dir)s"
 
 
+class InvalidBuildSource(RdopkgException):
+    msg_fmt = "Invalid build source: %(source)s"
+
+
+class BuildNotAvailable(RdopkgException):
+    msg_fmt = "%(build_id)s isn't available. %(detail)s"
+
+
 class Bug(RdopkgException):
     msg_fmt = "Bug: %(dafuq)s"

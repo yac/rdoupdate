@@ -1,9 +1,18 @@
 # -*- encoding: utf-8 -*-
+import os.path
 import yaml
 
 import const
+import errpass
 import exception
-import os.path
+import bsource
+
+
+def pp_update(path):
+    pretty = os.path.splitext(path)[0]
+    if pretty.startswith('updates/'):
+        pretty = pretty[8:]
+    return pretty
 
 
 class UpdateObject(object):
@@ -62,13 +71,23 @@ class Build(UpdateObject):
 
     def load_dict(self, data):
         UpdateObject.load_dict(self, data)
-        if self.source and self.source not in const.BUILD_SOURCES:
+        if self.source and \
+           self.source not in bsource.BuildSource.sources:
             raise exception.InvalidUpdateStructure(
                 msg="Invalid build source: %s (valid: %s)" %
-                    (self.source, " ".join(const.BUILD_SOURCES)))
+                    (self.source, " ".join(bsource.BuildSource.sources.keys())))
+
+    def is_available(self):
+        return bsrcman.build_available(self.source, self.id)
+
+    def download(self):
+        bsrcman.download_build(self.source, self.id)
+
+    def full_id(self):
+        return '%s:%s' % (self.source, self.id)
 
     def __str__(self):
-        s = '%s -> %s / %s' % (self.id, self.repo, self.dist)
+        s = '%s:%s -> %s / %s' % (self.source, self.id, self.repo, self.dist)
         if self.tag:
             s += ' [%s]' % self.tag
         return s
@@ -91,6 +110,13 @@ class Update(UpdateObject):
         d = super(Update, self).as_dict()
         d['builds'] = map(lambda x: x.as_dict(), d['builds'])
         return d
+
+    def all_builds_available(self):
+        for b in self.builds:
+            r = b.is_available()
+            if not r:
+                return errpass.BuildErrorBool(b, err=r.err)
+        return errpass.ErrorBool()
 
     def update_file(self, hints=True):
         s = '---\n'
@@ -127,8 +153,25 @@ class Update(UpdateObject):
         return self.summary()
 
 
-def pp_update(path):
-    pretty = os.path.splitext(path)[0]
-    if pretty.startswith('updates/'):
-        pretty = pretty[8:]
-    return pretty
+class BuildSourceManager(object):
+    def __init__(self):
+        self.srcs = {}
+
+    def get_source(self, source):
+        if source not in self.srcs:
+            cls = bsource.BuildSource.sources.get(source)
+            if not cls:
+                raise exception.InvalidBuildSource(source=source)
+            self.srcs[source] = cls()
+        return self.srcs[source]
+
+    def download_build(self, source, build_id):
+        src = self.get_source(source)
+        src.download_build(build_id)
+
+    def build_available(self, source, build_id):
+        src = self.get_source(source)
+        return src.build_available(build_id)
+
+
+bsrcman = BuildSourceManager()

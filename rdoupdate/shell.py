@@ -8,10 +8,12 @@ from . import VERSION
 import actions
 import core
 import exception
+from utils import log
 
 
 def error(errtype, msg, code=42):
-    sys.stderr.write("[ERROR] %s: %s\n" % (errtype, msg))
+    sys.stderr.write("{t.red}[ERROR] {t.yellow}{er}: {msg}"
+                     "{t.normal}\n".format(er=errtype, msg=msg, t=log.term))
     sys.exit(code)
 
 
@@ -27,10 +29,13 @@ def get_parser():
                     "selected (-f)")
     check_parser.add_argument(
         '-g', '--git', type=str, metavar='DIR',
-        help="check latest update file from git repository in DIR directory")
+        help="check latest update file added to git repo in DIR directory")
     check_parser.add_argument(
-        '-f', '--file', type=str, metavar='FILE',
-        help="check latest update file FILE; use - for stdin")
+        '-f', '--files', type=str, metavar='FILE', nargs='+',
+        help="check all specified FILEs; use - for stdin")
+    check_parser.add_argument(
+        '-a', '--available', action='store_true',
+        help="also check if builds are available for download")
     check_parser.set_defaults(action=do_check)
     # move
     move_parser = subparsers.add_parser(
@@ -48,16 +53,19 @@ def get_parser():
 
 
 def do_check(args):
-    if args.file and args.git:
-        error("invalid invocation", "Only one update file can be "
-                                    "specified.", 19)
-    if args.file:
-        update = actions.check_file(args.file)
+    if args.files and args.git:
+        error("invalid invocation", "-g and -f are exclusive.", 19)
+    if args.files:
+        files = args.files
     else:
         if not args.git:
             args.git = '.'
-        update = actions.check_git(args.git)
-    print(update)
+        f = actions.get_last_commit_update(args.git)
+        files = [f]
+    good, fails = actions.check_files(*files, available=args.available)
+    actions.print_check_summary(good, fails)
+    if fails:
+        return 127
 
 
 def do_move(args):
@@ -72,7 +80,11 @@ def main(cargs=None):
     args = parser.parse_args(cargs)
     action = args.action
     try:
-        action(args)
+        ret = action(args)
+        if ret:
+            sys.exit(ret)
+        else:
+            sys.exit()
     except IOError as e:
         error("file error", "%s: %s" % (e.strerror, e.filename), 2)
     except exception.ChdirError as e:
