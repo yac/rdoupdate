@@ -2,10 +2,11 @@
 import os.path
 import yaml
 
+import bsource
 import const
 import errpass
 import exception
-import bsource
+import helpers
 
 
 def pp_update(path):
@@ -81,10 +82,21 @@ class Build(UpdateObject):
         return bsrcman.build_available(self.source, self.id)
 
     def download(self):
+        """
+        Download build into current directory.
+        """
         bsrcman.download_build(self.source, self.id)
 
     def full_id(self):
         return '%s:%s' % (self.source, self.id)
+
+    def path(self, prefix=None):
+        build_path = os.path.join(self.repo, self.dist)
+        if self.tag:
+            build_path = os.path.join(build_path, self.tag)
+        if prefix:
+            build_path = os.path.join(prefix, build_path)
+        return build_path
 
     def __str__(self):
         s = '%s:%s -> %s / %s' % (self.source, self.id, self.repo, self.dist)
@@ -142,6 +154,19 @@ class Update(UpdateObject):
 ## Commented lines will be deleted
 """
         return s
+
+    def download(self, out_dir=None, prefix=None):
+        for build in self.builds:
+            if out_dir:
+                updir_path = out_dir
+            else:
+                updir_path = ''
+            if prefix:
+                updir_path = os.path.join(updir_path, prefix)
+            build_path = build.path(prefix=updir_path)
+            helpers.ensure_dir(build_path)
+            with helpers.cdir(build_path):
+                build.download()
 
     def summary(self):
         s = "\n".join(map(str, self.builds))

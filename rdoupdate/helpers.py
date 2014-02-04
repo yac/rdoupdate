@@ -1,4 +1,5 @@
 import contextlib
+import exception
 import os
 
 from utils import log
@@ -11,6 +12,14 @@ def print_list(l, nl_before=False, nl_after=False):
         log.info("- %s" % e)
     if nl_after:
         log.info("")
+
+
+def ensure_dir(path):
+    if os.path.exists(path):
+        if not os.path.isdir(path):
+            raise exception.NotADirectory(path=path)
+    else:
+        os.makedirs(path)
 
 
 @contextlib.contextmanager

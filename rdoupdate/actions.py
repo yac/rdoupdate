@@ -36,29 +36,48 @@ def check_files(*files, **kwargs):
     return good, fails
 
 
-def print_check_summary(good, fails):
+def print_summary(good, fails, good_s, fail_s):
     n_good = len(good)
     n_fails = len(fails)
     n_all = n_good + n_fails
     if good:
-        log.success("\n%d updates PASSED:" % n_good)
+        log.success("\n%d updates %s:" % (n_good, good_s))
         fmt = '{t.bold}{upf}:{t.normal}\n{up}'
         l = map(lambda x: fmt.format(t=log.term, upf=x[0], up=x[1]), good)
         helpers.print_list(l)
     if fails:
-        log.error("\n%s updates FAILED:" % n_fails)
+        log.error("\n%s updates %s:" % (n_fails, fail_s))
         fmt = "{t.warn}{upf}:{t.normal} {err}"
         l = map(lambda x: fmt.format(t=log.term, upf=x[0], err=str(x[1])),
                 fails)
         helpers.print_list(l)
 
-def get_last_commit_update(dir):
-    if dir and dir != '.':
+
+def download_updates_builds(*files, **kwargs):
+    good = []
+    fails = []
+    per_update = kwargs.get('per_update', False)
+    out_dir = kwargs.get('out_dir', None)
+    if not out_dir:
+        out_dir = ''
+    prefix = None
+    for f in files:
         try:
-            os.chdir(dir)
-        except OSError:
-            raise exception.ChdirError(dir=dir)
-    out = git('diff', '--name-status', 'HEAD~..HEAD').strip()
+            update = check_file(f)
+            bn = os.path.basename(f)
+            if per_update:
+                prefix = bn
+            log.info(log.term.bold('downloading %s' % core.pp_update(bn)))
+            update.download(out_dir=out_dir, prefix=prefix)
+            good.append((f, update))
+        except Exception as ex:
+            fails.append((f, ex))
+    return good, fails
+
+
+def get_last_commit_update(dir):
+    with helpers.cdir(dir):
+        out = git('diff', '--name-status', 'HEAD~..HEAD').strip()
     if out.find("\n") != -1:
         raise exception.InvalidUpdateCommit(
             msg="Last commit changes more than one file.")

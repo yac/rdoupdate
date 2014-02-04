@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import argparse
+import os
 import sys
 import yaml
 
@@ -23,10 +24,10 @@ def get_parser():
     parser.add_argument('--version', action='version', version=VERSION)
     # check
     check_parser = subparsers.add_parser(
-        'check', help="validate an update file",
-        description="validate an update file either added by latest git "
-                    "commit in current repo (-g, default) or manually "
-                    "selected (-f)")
+        'check', help="validate update file(s)",
+        description="validate one or more update files; use -g to select "
+                    "an update file added by last commit to a git repo or "
+                    "use -f to select update files directly (default: -g .)")
     check_parser.add_argument(
         '-g', '--git', type=str, metavar='DIR',
         help="check latest update file added to git repo in DIR directory")
@@ -37,6 +38,27 @@ def get_parser():
         '-a', '--available', action='store_true',
         help="also check if builds are available for download")
     check_parser.set_defaults(action=do_check)
+    # download
+    dl_parser = subparsers.add_parser(
+        'download', help="download builds from update file(s)",
+        description=("download builds from one or more update files into a "
+                     "directory tree; use -g to select an update file added "
+                     "by last commit to a git repo or use -f to select update "
+                     "files directly; default: -g ."))
+    dl_parser.add_argument(
+        '-g', '--git', type=str, metavar='DIR',
+        help="download builds from latest update file added to git repo in "
+             "DIR directory")
+    dl_parser.add_argument(
+        '-f', '--files', type=str, metavar='FILE', nargs='+',
+        help="check all specified FILEs; use - for stdin")
+    dl_parser.add_argument(
+        '-o', '--outdir', type=str, metavar='DIR',
+        help="directory to download builds into (default: .)")
+    dl_parser.add_argument(
+        '-u', '--per-update', action='store_true',
+        help="create extra directory for each update")
+    dl_parser.set_defaults(action=do_download)
     # move
     move_parser = subparsers.add_parser(
         'move', help="move an update file (create a commit)",
@@ -52,7 +74,7 @@ def get_parser():
     return parser
 
 
-def do_check(args):
+def _get_update_files(args):
     if args.files and args.git:
         error("invalid invocation", "-g and -f are exclusive.", 19)
     if args.files:
@@ -61,11 +83,25 @@ def do_check(args):
         if not args.git:
             args.git = '.'
         f = actions.get_last_commit_update(args.git)
-        files = [f]
+        files = [os.path.join(args.git, f)]
+    return files
+
+
+def do_check(args):
+    files = _get_update_files(args)
     good, fails = actions.check_files(*files, available=args.available)
-    actions.print_check_summary(good, fails)
+    actions.print_summary(good, fails, 'PASSED', 'FAILED')
     if fails:
         return 127
+
+
+def do_download(args):
+    files = _get_update_files(args)
+    good, fails = actions.download_updates_builds(
+        *files, out_dir=args.outdir, per_update=args.per_update)
+    actions.print_summary(good, fails, 'DOWNLOADED', 'FAILED to download')
+    if fails:
+        return 128
 
 
 def do_move(args):

@@ -25,5 +25,9 @@ class BuildNotAvailable(RdopkgException):
     msg_fmt = "%(build_id)s isn't available. %(detail)s"
 
 
+class NotADirectory(RdopkgException):
+    msg_fmt = "Not a directory: %(path)s"
+
+
 class Bug(RdopkgException):
     msg_fmt = "Bug: %(dafuq)s"
