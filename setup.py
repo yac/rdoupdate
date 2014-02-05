@@ -11,7 +11,7 @@ setuptools.setup(
     author='Jakub Ruzicka',
     author_email='jruzicka@redhat.com',
     url='https://github.com/yac/rdoupdate',
-    packages=['rdoupdate', 'rdoupdate.utils', 'rdoupdate.bsource'],
+    packages=['rdoupdate', 'rdoupdate.utils', 'rdoupdate.bsources'],
     entry_points={
         "console_scripts": ["rdoupdate = rdoupdate.shell:main"]
     }
