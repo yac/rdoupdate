@@ -70,11 +70,11 @@ def download_updates_builds(*files, **kwargs):
     prefix = None
     for f in files:
         try:
-            update = check_file(f)
             bn = os.path.basename(f)
             if per_update:
                 prefix = bn
-            log.info(log.term.bold('downloading %s' % core.pp_update(bn)))
+            log.info(log.term.bold('downloading %s' % bn))
+            update = check_file(f)
             builds = update.download(out_dir=out_dir, prefix=prefix,
                                      build_filter=build_filter)
             if builds:
