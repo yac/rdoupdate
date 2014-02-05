@@ -43,7 +43,13 @@ def print_summary(good, fails, good_s, fail_s):
     if good:
         log.success("\n%d updates %s:" % (n_good, good_s))
         fmt = '{t.bold}{upf}:{t.normal}\n{up}'
-        l = map(lambda x: fmt.format(t=log.term, upf=x[0], up=x[1]), good)
+        if len(good[0]) == 2:
+            l = map(lambda x: fmt.format(t=log.term, upf=x[0], up=x[1]), good)
+        else:
+            l = []
+            for upf, up, builds in good:
+                bstr = '\n'.join(map(str, builds))
+                l.append(fmt.format(t=log.term, upf=upf, up=bstr))
         helpers.print_list(l)
     if fails:
         log.error("\n%s updates %s:" % (n_fails, fail_s))
@@ -58,6 +64,7 @@ def download_updates_builds(*files, **kwargs):
     fails = []
     per_update = kwargs.get('per_update', False)
     out_dir = kwargs.get('out_dir', None)
+    build_filter = kwargs.get('build_filter', [])
     if not out_dir:
         out_dir = ''
     prefix = None
@@ -68,8 +75,10 @@ def download_updates_builds(*files, **kwargs):
             if per_update:
                 prefix = bn
             log.info(log.term.bold('downloading %s' % core.pp_update(bn)))
-            update.download(out_dir=out_dir, prefix=prefix)
-            good.append((f, update))
+            builds = update.download(out_dir=out_dir, prefix=prefix,
+                                     build_filter=build_filter)
+            if builds:
+                good.append((f, update, builds))
         except Exception as ex:
             log.warn(str(ex))
             fails.append((f, ex))

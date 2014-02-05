@@ -33,5 +33,8 @@ class FileExists(RdopkgException):
     msg_fmt = "File already exists: %(path)s"
 
 
+class InvalidFilter(RdopkgException):
+    msg_fmt = "Invalid filter: %(what)s"
+
 class Bug(RdopkgException):
     msg_fmt = "Bug: %(dafuq)s"

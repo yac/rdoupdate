@@ -58,6 +58,10 @@ def get_parser():
     dl_parser.add_argument(
         '-u', '--per-update', action='store_true',
         help="create extra directory for each update")
+    dl_parser.add_argument(
+        '-b', '--build-filter', metavar='ATTR:REGEX', action='append',
+        help="Only download builds with ATTRibute matching python REGEX; can "
+             "be specified multiple times")
     dl_parser.set_defaults(action=do_download)
     # move
     move_parser = subparsers.add_parser(
@@ -95,10 +99,25 @@ def do_check(args):
         return 127
 
 
+def _parse_build_filter(fargs):
+    bf = []
+    if not fargs:
+        return bf
+    for f in fargs:
+        try:
+            attr, rex = f.split(':', 1)
+        except Exception as ex:
+            raise exception.InvalidFilter(what=f)
+        bf.append((attr, rex))
+    return bf
+
+
 def do_download(args):
     files = _get_update_files(args)
+    build_filter = _parse_build_filter(args.build_filter)
     good, fails = actions.download_updates_builds(
-        *files, out_dir=args.outdir, per_update=args.per_update)
+        *files, out_dir=args.outdir, per_update=args.per_update,
+        build_filter=build_filter)
     actions.print_summary(good, fails, 'DOWNLOADED', 'FAILED to download')
     if fails:
         return 128

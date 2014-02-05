@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import os.path
+import re
 import yaml
 
 import bsource
@@ -9,6 +10,7 @@ import exception
 import helpers
 # plug module loads (pluggable) build sources on load
 import plug
+from utils import log
 
 
 def pp_update(path):
@@ -100,6 +102,17 @@ class Build(UpdateObject):
             build_path = os.path.join(prefix, build_path)
         return build_path
 
+    def match_filter(self, f):
+        for attr, rex in f:
+            if not hasattr(self, attr):
+                return False
+            a = getattr(self, attr)
+            if not isinstance(attr, basestring):
+                return False
+            if not re.match(rex, a):
+                return False
+        return True
+
     def __str__(self):
         s = '%s:%s -> %s / %s' % (self.source, self.id, self.repo, self.dist)
         if self.tag:
@@ -157,8 +170,12 @@ class Update(UpdateObject):
 """
         return s
 
-    def download(self, out_dir=None, prefix=None):
+    def download(self, out_dir=None, prefix=None, build_filter=None):
+        dld_builds = []
         for build in self.builds:
+            if build_filter and not build.match_filter(build_filter):
+                log.info("SKIPPING: %s" % build)
+                continue
             if out_dir:
                 updir_path = out_dir
             else:
@@ -169,6 +186,8 @@ class Update(UpdateObject):
             helpers.ensure_dir(build_path)
             with helpers.cdir(build_path):
                 build.download()
+            dld_builds.append(build)
+        return dld_builds
 
     def summary(self):
         s = "\n".join(map(str, self.builds))
