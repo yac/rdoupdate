@@ -7,6 +7,8 @@ import const
 import errpass
 import exception
 import helpers
+# plug module loads (pluggable) build sources on load
+import plug
 
 
 def pp_update(path):

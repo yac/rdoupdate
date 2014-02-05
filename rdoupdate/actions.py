@@ -71,6 +71,7 @@ def download_updates_builds(*files, **kwargs):
             update.download(out_dir=out_dir, prefix=prefix)
             good.append((f, update))
         except Exception as ex:
+            log.warn(str(ex))
             fails.append((f, ex))
     return good, fails
 

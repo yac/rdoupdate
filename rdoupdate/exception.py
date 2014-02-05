@@ -29,5 +29,9 @@ class NotADirectory(RdopkgException):
     msg_fmt = "Not a directory: %(path)s"
 
 
+class FileExists(RdopkgException):
+    msg_fmt = "File already exists: %(path)s"
+
+
 class Bug(RdopkgException):
     msg_fmt = "Bug: %(dafuq)s"
