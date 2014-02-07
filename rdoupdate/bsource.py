@@ -20,15 +20,15 @@ class BuildSource(object):
     """
     __metaclass__ = BuildSourceMount
 
-    def download_build(self, build_id, path=None):
+    def download_build(self, build, path=None):
         with helpers.cdir(path):
-            self._download_build(build_id)
+            self._download_build(build)
 
-    def build_available(self, build_id):
-        return self._build_available(build_id)
+    def build_available(self, build):
+        return self._build_available(build)
 
-    def _download_build(self, build_id):
+    def _download_build(self, build):
         raise NotImplementedError
 
-    def _build_available(self, build_id):
+    def _build_available(self, build):
         raise NotImplementedError

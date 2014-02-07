@@ -13,9 +13,9 @@ def touch(f):
 class DummySource(BuildSource):
     name = 'dummy'
 
-    def _download_build(self, build_id):
-        touch('%s.dummy.rpm' % build_id)
-        touch('%s.dummy.src.rpm' % build_id)
+    def _download_build(self, build):
+        touch('%s.dummy.rpm' % build.id)
+        touch('%s.dummy.src.rpm' % build.id)
 
-    def _build_available(self, build_id):
+    def _build_available(self, build):
         return ErrorBool()

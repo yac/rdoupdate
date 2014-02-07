@@ -83,13 +83,13 @@ class Build(UpdateObject):
                     (self.source, " ".join(bsource.BuildSource.sources.keys())))
 
     def is_available(self):
-        return bsrcman.build_available(self.source, self.id)
+        return bsrcman.build_available(self)
 
     def download(self):
         """
         Download build into current directory.
         """
-        bsrcman.download_build(self.source, self.id)
+        bsrcman.download_build(self)
 
     def full_id(self):
         return '%s:%s' % (self.source, self.id)
@@ -211,13 +211,13 @@ class BuildSourceManager(object):
             self.srcs[source] = cls()
         return self.srcs[source]
 
-    def download_build(self, source, build_id):
-        src = self.get_source(source)
-        src.download_build(build_id)
+    def download_build(self, build):
+        src = self.get_source(build.source)
+        src.download_build(build)
 
-    def build_available(self, source, build_id):
-        src = self.get_source(source)
-        return src.build_available(build_id)
+    def build_available(self, build):
+        src = self.get_source(build.source)
+        return src.build_available(build)
 
 
 bsrcman = BuildSourceManager()

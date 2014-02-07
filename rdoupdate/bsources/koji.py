@@ -5,11 +5,11 @@ from rdoupdate.utils.cmd import run
 class KojiSource(BuildSource):
     name = 'koji'
 
-    def _download_build(self, build_id):
-        run('koji', 'download-build', build_id)
+    def _download_build(self, build):
+        run('koji', 'download-build', build.id)
 
-    def _build_available(self, build_id):
-        o = run('koji', 'buildinfo', build_id, fatal=False)
+    def _build_available(self, build):
+        o = run('koji', 'buildinfo', build.id, fatal=False)
         if o.success:
             return ErrorBool()
         else:
