@@ -1,5 +1,6 @@
 import os.path
 from rdoupdate.bsource import BuildSource
+from rdoupdate.errpass import ErrorBool
 from rdoupdate.utils.cmd import run
 from rdoupdate.exception import FileExists
 
@@ -9,7 +10,7 @@ def touch(f):
         raise FileExists(path=f)
     run('touch', f)
 
-class DummyFetcher(BuildSource):
+class DummySource(BuildSource):
     name = 'dummy'
 
     def _download_build(self, build_id):
@@ -17,4 +18,4 @@ class DummyFetcher(BuildSource):
         touch('%s.dummy.src.rpm' % build_id)
 
     def _build_available(self, build_id):
-        return True
+        return ErrorBool()

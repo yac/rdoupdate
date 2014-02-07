@@ -2,7 +2,7 @@ from rdoupdate.bsource import BuildSource
 from rdoupdate.errpass import ErrorBool
 from rdoupdate.utils.cmd import run
 
-class KojiFetcher(BuildSource):
+class KojiSource(BuildSource):
     name = 'koji'
 
     def _download_build(self, build_id):
