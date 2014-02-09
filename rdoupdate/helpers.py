@@ -3,6 +3,7 @@ import exception
 import os
 
 from utils import log
+from utils.cmd import run
 
 
 def print_list(l, nl_before=False, nl_after=False):
@@ -20,6 +21,10 @@ def ensure_dir(path):
             raise exception.NotADirectory(path=path)
     else:
         os.makedirs(path)
+
+
+def download_file(url):
+    run('curl', '-L', '-O', url, direct=True)
 
 
 @contextlib.contextmanager
