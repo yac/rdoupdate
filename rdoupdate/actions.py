@@ -28,7 +28,8 @@ def check_files(*files, **kwargs):
                 avl = update.all_builds_available()
                 if not avl:
                     e = exception.BuildNotAvailable(
-                        build_id=avl.build.full_id(), detail=avl.err or '')
+                        build_id=avl.build.id, source=avl.build.source,
+                        detail=avl.err or '')
                     raise e
             good.append((f, update))
         except Exception as ex:

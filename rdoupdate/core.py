@@ -92,7 +92,7 @@ class Build(UpdateObject):
         bsrcman.download_build(self)
 
     def full_id(self):
-        return '%s:%s' % (self.source, self.id)
+        return '%s@%s' % (self.id, self.source)
 
     def path(self, prefix=None):
         build_path = os.path.join(self.repo, self.dist)
@@ -114,7 +114,7 @@ class Build(UpdateObject):
         return True
 
     def __str__(self):
-        s = '%s:%s -> %s / %s' % (self.source, self.id, self.repo, self.dist)
+        s = '%s @ %s -> %s / %s' % (self.id, self.source, self.repo, self.dist)
         if self.tag:
             s += ' [%s]' % self.tag
         return s

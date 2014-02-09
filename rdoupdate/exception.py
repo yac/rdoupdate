@@ -22,7 +22,7 @@ class InvalidBuildSource(RdopkgException):
 
 
 class BuildNotAvailable(RdopkgException):
-    msg_fmt = "%(build_id)s isn't available. %(detail)s"
+    msg_fmt = "%(build_id)s isn't available from %(source)s. %(detail)s"
 
 
 class NotADirectory(RdopkgException):
