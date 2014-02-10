@@ -3,6 +3,7 @@ import re
 import shutil
 import yaml
 
+import bsource
 import core
 import exception
 import helpers
@@ -121,3 +122,7 @@ def move_files(files, to_dir):
             msg += "\n%s" % core.pp_update(from_path)
     git('commit', '-a', '-F', '-', input=msg, print_output=True)
 
+
+def list_build_sources():
+    log.info("Available build sources:")
+    helpers.print_list(sorted(bsource.BuildSource.sources))

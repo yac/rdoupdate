@@ -19,7 +19,7 @@ def error(errtype, msg, code=42):
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(prog='rdopkg')
+    parser = argparse.ArgumentParser(prog='rdoupdate')
     subparsers = parser.add_subparsers(help='available actions')
     parser.add_argument('--version', action='version', version=VERSION)
     # check
@@ -74,6 +74,10 @@ def get_parser():
         '-d', '--dir', type=str, metavar='DIR', default="ready",
         help="move update file(s) to this directory (default: ready)")
     move_parser.set_defaults(action=do_move)
+    list_parser = subparsers.add_parser(
+        'list-bsources', help="show available build sources",
+        description="show available build sources")
+    list_parser.set_defaults(action=do_list_bsources)
 
     return parser
 
@@ -125,6 +129,10 @@ def do_download(args):
 
 def do_move(args):
     actions.move_files(args.files, args.dir)
+
+
+def do_list_bsources(args):
+    actions.list_build_sources()
 
 
 def main(cargs=None):
