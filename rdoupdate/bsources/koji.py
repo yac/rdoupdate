@@ -10,7 +10,8 @@ class KojiSource(BuildSource):
 
     def _build_available(self, build):
         o = run('koji', 'buildinfo', build.id, fatal=False)
-        if o.success:
-            return ErrorBool()
-        else:
+        if not o.success:
             return ErrorBool(err=o)
+        if o.find("COMPLETE") == -1:
+            return ErrorBool(err="Build not complete.")
+        return ErrorBool()
