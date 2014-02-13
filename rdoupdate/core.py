@@ -113,6 +113,13 @@ class Build(UpdateObject):
                 return False
         return True
 
+    def as_yaml_item(self):
+        s = ("  - id: %s\n    source: %s\n    repo: %s\n    dist: %s" %
+             (self.id, self.source, self.repo, self.dist))
+        if self.tag:
+            s += "\n    tag: %s" % self.tag
+        return s
+
     def __str__(self):
         s = '%s @ %s -> %s / %s' % (self.id, self.source, self.repo, self.dist)
         if self.tag:
@@ -158,13 +165,12 @@ class Update(UpdateObject):
 """
         s += 'builds:\n'
         for b in self.builds:
-            s += '   - id: %s\n     repo: %s\n     dist: %s\n' % (b.id, b.repo,
-                                                                  b.dist)
+            s += b.as_yaml_item() + '\n'
         if hints:
             s += """## You can add more builds here like this:
-#   - id: python-awesomepackage-3.14-1.el6
-#     repo: havana
-#     dist: epel-6
+#  - id: python-awesomepackage-3.14-1.el6
+#    repo: icehouse
+#    dist: epel-6
 #
 ## Commented lines will be deleted
 """
