@@ -89,7 +89,7 @@ def download_updates_builds(*files, **kwargs):
 
 def get_last_commit_update(dir='.'):
     with helpers.cdir(dir):
-        out = git('diff', '--name-status', 'HEAD~..HEAD').strip()
+        out = git('diff', '--name-status', 'HEAD~..HEAD', log_cmd=False).strip()
     if out.find("\n") != -1:
         raise exception.InvalidUpdateCommit(
             msg="Last commit changes more than one file.")
