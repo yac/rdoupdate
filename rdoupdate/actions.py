@@ -87,7 +87,7 @@ def download_updates_builds(*files, **kwargs):
     return good, fails
 
 
-def get_last_commit_update(dir):
+def get_last_commit_update(dir='.'):
     with helpers.cdir(dir):
         out = git('diff', '--name-status', 'HEAD~..HEAD').strip()
     if out.find("\n") != -1:
