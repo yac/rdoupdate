@@ -14,7 +14,11 @@ from utils import log
 def check_file(stream):
     if isinstance(stream, basestring):
         stream = file(stream, 'r')
-    data = yaml.load(stream)
+    content = stream.read()
+    if len(re.findall('^builds:', content, flags=re.M)) > 1:
+        raise exception.InvalidUpdateStructure(
+            msg="Multiple 'builds:' in an update file. Oh, come on.")
+    data = yaml.load(content)
     return core.Update(data)
 
 
