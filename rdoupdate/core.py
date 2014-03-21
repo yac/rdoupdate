@@ -133,10 +133,14 @@ class Build(UpdateObject):
 class Update(UpdateObject):
     name = 'update'
     required_attrs = ['builds']
-    optional_attrs = ['comment']
+    optional_attrs = ['comment', 'group']
 
     def load_dict(self, data):
         super(Update, self).load_dict(data)
+        if self.group and \
+                ('/' in self.group or '\\' in self.group):
+            raise exception.InvalidUpdateStructure(
+                msg="Update group can't contain slashes: %s" % self.group)
         def _buildize(b):
             if isinstance(b, Build):
                 return b
@@ -197,6 +201,9 @@ class Update(UpdateObject):
                 build.download()
             dld_builds.append(build)
         return dld_builds
+
+    def get_ready_dir(self):
+        return self.group or 'ready'
 
     def summary(self):
         s = "\n".join(map(str, self.builds))

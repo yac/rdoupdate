@@ -71,8 +71,9 @@ def get_parser():
         'files', metavar='FILE', type=str, nargs='+',
         help='update file(s) to move')
     move_parser.add_argument(
-        '-d', '--dir', type=str, metavar='DIR', default="ready",
-        help="move update file(s) to this directory (default: ready)")
+        '-d', '--dir', type=str, metavar='DIR',
+        help="move update file(s) to this directory instead of using "
+             "update.group")
     move_parser.set_defaults(action=do_move)
     list_parser = subparsers.add_parser(
         'list-bsources', help="show available build sources",

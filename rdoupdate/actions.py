@@ -106,21 +106,27 @@ def get_last_commit_update(dir='.'):
     return fn
 
 
-def move_files(files, to_dir):
-    if not os.path.exists(to_dir):
-        os.makedirs(to_dir)
+def move_files(files, to_dir=None):
     n_files = len(files)
-    if n_files == 1:
-        msg = "Move %s to %s/" % (core.pp_update(files[0]), to_dir)
-    else:
+    msg = "Move %d updates\n" % (n_files,)
+    if n_files > 1 and to_dir:
         msg = "Move %d updates to %s/\n" % (n_files, to_dir)
     for from_path in files:
         bn = os.path.basename(from_path)
-        to_path = "%s/%s" % (to_dir, bn)
+        if to_dir:
+            _to_dir = to_dir
+        else:
+            update = check_file(from_path)
+            _to_dir = update.get_ready_dir()
+        if not os.path.exists(_to_dir):
+            os.makedirs(_to_dir)
+        to_path = "%s/%s" % (_to_dir, bn)
         assert(from_path and to_path)
         git('mv', from_path, to_path)
-        if n_files != 1:
-            msg += "\n%s" % core.pp_update(from_path)
+        if n_files == 1:
+            msg = "Move %s to %s/" % (core.pp_update(from_path), _to_dir)
+        else:
+            msg += "\n%s -> %s" % (from_path, to_path)
     git('commit', '-a', '-F', '-', input=msg, print_output=True)
 
 
