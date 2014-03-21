@@ -97,7 +97,8 @@ def _get_update_files(args):
 
 def do_check(args):
     files = _get_update_files(args)
-    good, fails = actions.check_files(*files, available=args.available)
+    good, fails = actions.check_files(*files, available=args.available,
+                                      verbose=True)
     actions.print_summary(good, fails, 'PASSED', 'FAILED')
     if fails:
         return 127

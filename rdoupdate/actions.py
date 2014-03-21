@@ -22,11 +22,12 @@ def check_files(*files, **kwargs):
     good = []
     fails = []
     avail = kwargs.get('available', False)
+    verbose = kwargs.get('verbose', False)
     for f in files:
         try:
             update = check_file(f)
             if avail:
-                avl = update.all_builds_available()
+                avl = update.all_builds_available(verbose=verbose)
                 if not avl:
                     e = exception.BuildNotAvailable(
                         build_id=avl.build.id, source=avl.build.source,

@@ -82,7 +82,10 @@ class Build(UpdateObject):
                 msg="Invalid build source: %s (valid: %s)" %
                     (self.source, " ".join(bsource.BuildSource.sources.keys())))
 
-    def is_available(self):
+    def is_available(self, verbose=False):
+        if verbose:
+            log.info("{t.bold}Avail. check:{t.normal} {build}".format(
+                t=log.term, build=self))
         return bsrcman.build_available(self)
 
     def download(self):
@@ -145,9 +148,9 @@ class Update(UpdateObject):
         d['builds'] = map(lambda x: x.as_dict(), d['builds'])
         return d
 
-    def all_builds_available(self):
+    def all_builds_available(self, verbose=False):
         for b in self.builds:
-            r = b.is_available()
+            r = b.is_available(verbose=verbose)
             if not r:
                 return errpass.BuildErrorBool(b, err=r.err)
         return errpass.ErrorBool()
