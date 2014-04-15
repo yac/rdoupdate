@@ -20,6 +20,17 @@ def pp_update(path):
     return pretty
 
 
+class FillThis(unicode):
+    def __new__(cls):
+        return unicode.__new__(cls, u'')
+
+    def __nonzero__(self):
+        return True
+
+
+FILL_THIS = FillThis()
+
+
 class UpdateObject(object):
     """
     Abstract class providing initialization from and export to dict.
@@ -132,8 +143,8 @@ class Build(UpdateObject):
 
 class Update(UpdateObject):
     name = 'update'
-    required_attrs = ['builds']
-    optional_attrs = ['comment', 'group']
+    required_attrs = ['builds', 'notes']
+    optional_attrs = ['group']
 
     def load_dict(self, data):
         super(Update, self).load_dict(data)
@@ -141,6 +152,8 @@ class Update(UpdateObject):
                 ('/' in self.group or '\\' in self.group):
             raise exception.InvalidUpdateStructure(
                 msg="Update group can't contain slashes: %s" % self.group)
+        if isinstance(self.notes, unicode):
+            self.notes = self.notes.encode('utf-8')
         def _buildize(b):
             if isinstance(b, Build):
                 return b
@@ -161,15 +174,22 @@ class Update(UpdateObject):
 
     def update_file(self, hints=True):
         s = '---\n'
-        if self.comment:
-            s += yaml.dump({'comment': self.comment})
+        if self.notes and self.notes != FILL_THIS:
+            if self.notes.find("\n") == -1:
+                s += yaml.dump({'notes': self.notes}, default_flow_style=False)
+            else:
+                s += "notes: |-\n  "
+                s += self.notes.replace("\n", "\n  ") + "\n"
         else:
             if hints:
-                s += """## You may add a comment describing this update, for example:
-#comment: |
-#         Description of this mighty update
-#         with "quotes" and stuff.
+                s += """## Describe this update, for example:
+#notes: |-
+#  Description of this mighty update X.Y.Z
+#  with "quotes" and stuff.
+notes:
 """
+        if self.group:
+            s += yaml.dump({'group': self.group}, default_flow_style=False)
         s += 'builds:\n'
         for b in self.builds:
             s += b.as_yaml_item() + '\n'
@@ -207,8 +227,8 @@ class Update(UpdateObject):
 
     def summary(self):
         s = "\n".join(map(str, self.builds))
-        if self.comment:
-            s += "\n---\n%s" % self.comment
+        if self.notes:
+            s += "\n---\n%s" % self.notes
         return s
 
     def __str__(self):
