@@ -19,6 +19,9 @@ def check_file(stream):
         raise exception.InvalidUpdateStructure(
             msg="Multiple 'builds:' in an update file. Oh, come on.")
     data = yaml.load(content)
+    if not data:
+        raise exception.InvalidUpdateStructure(
+            msg="No data in update file.")
     return core.Update(data)
 
 
