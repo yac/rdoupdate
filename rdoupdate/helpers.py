@@ -27,6 +27,14 @@ def download_file(url):
     run('curl', '-L', '-O', url, direct=True)
 
 
+def list_files(path='.'):
+    tree = set()
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            tree.add(f)
+    return tree
+
+
 @contextlib.contextmanager
 def cdir(path):
     if not path or path == '.':

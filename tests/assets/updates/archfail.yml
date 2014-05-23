@@ -1,0 +1,16 @@
+---
+notes: |-
+  much bananas
+  such update
+  wow
+builds:
+   - id: banana-1.0-1.fc21
+     source: dummy
+     repo: icehouse
+     dist: fedora-20
+     arch: noarch, lolilol, dummy
+   - id: orange-2.0-2.el6
+     source: dummy
+     repo: icehouse
+     dist: fedora-20
+     arch: nope, nuhuh

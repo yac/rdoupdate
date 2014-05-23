@@ -137,19 +137,17 @@ def do_list_bsources(args):
     actions.list_build_sources()
 
 
-def main(cargs=None):
-    if cargs is None:
-        cargs = sys.argv[1:]
-
+def run(*cargs):
     parser = get_parser()
     args = parser.parse_args(cargs)
     action = args.action
+    return action(args)
+
+
+def main():
+    cargs = sys.argv[1:]
     try:
-        ret = action(args)
-        if ret:
-            sys.exit(ret)
-        else:
-            sys.exit()
+        return run(*cargs)
     except IOError as e:
         error("file error", "%s: %s" % (e.strerror, e.filename), 2)
     except exception.ChdirError as e:

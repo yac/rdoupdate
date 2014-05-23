@@ -82,7 +82,7 @@ class UpdateObject(object):
 class Build(UpdateObject):
     name = 'build'
     required_attrs = ['id', 'repo', 'dist']
-    optional_attrs = ['tag', 'source']
+    optional_attrs = ['tag', 'source', 'arch']
     attr_defaults = {'source': const.DEFAULT_BUILD_SOURCE}
 
     def load_dict(self, data):

@@ -36,5 +36,14 @@ class FileExists(RdopkgException):
 class InvalidFilter(RdopkgException):
     msg_fmt = "Invalid filter: %(what)s"
 
+
+class NoBuildFilesDownloaded(RdopkgException):
+    msg_fmt = "No files were downloaded for build: %(build)s"
+
+
+class AllBuildFilesExcluded(RdopkgException):
+    msg_fmt = "All files were excluded by a filter for build: %(build)s"
+
+
 class Bug(RdopkgException):
     msg_fmt = "Bug: %(dafuq)s"
