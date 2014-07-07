@@ -42,5 +42,10 @@ class RpmModuleNotAvailable(ModuleNotAvailable):
                "files. Pro tip: `yum install rpm-python`")
 
 
+class KojiModuleNotAvailable(ModuleNotAvailable):
+    msg_fmt = ("Module koji is not available. It is required by "
+               "koji-scratch build source. Pro tip: `yum install koji`")
+
+
 class InvalidAction(RdopkgException):
     msg_fmt = "Invalid action: %(action)s"

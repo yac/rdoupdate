@@ -1,10 +1,17 @@
-import koji
 import urlgrabber
 import urlgrabber.progress
 
 from rdoupdate.bsource import BuildSource
 from rdoupdate.errpass import ErrorBool
+from rdoupdate.utils import exception
 from rdoupdate.utils.cmd import run
+
+KOJI_AVAILABLE = False
+try:
+    import koji
+    KOJI_AVAILABLE = True
+except ImportError:
+    pass
 
 
 KOJI_HUB_URL = 'http://koji.fedoraproject.org/kojihub'
@@ -32,6 +39,8 @@ class KojiScratchSource(BuildSource):
     name = 'koji-scratch'
 
     def __init__(self):
+        if not KOJI_AVAILABLE:
+            raise exception.KojiModuleNotAvailable()
         self._kojics = None
 
     @property
