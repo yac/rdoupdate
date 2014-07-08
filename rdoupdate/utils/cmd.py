@@ -188,6 +188,16 @@ class Git(ShellCommand):
         log_out = self('log', '--format=%s', range)
         return self._parse_output(log_out)
 
+    def get_file_authors(self, path, with_email=True):
+        if with_email:
+            pf = '%an <%ae>'
+        else:
+            pf = '%an'
+        authors = self('log', '--oneline', "--pretty=%s" % pf, path,
+                       log_cmd=False)
+        authors = list(reversed(authors.split('\n')))
+        return authors
+
     def config_get(self, param):
         return self("config", "--get", param)
 

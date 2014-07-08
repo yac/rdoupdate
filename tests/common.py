@@ -1,8 +1,11 @@
 import os
 import py
+import shutil
+from rdoupdate.utils.cmd import git
 
 
 ASSETS_DIR = 'tests/assets'
+UPDATES_DIR = 'updates'
 
 
 def update_file(name):
@@ -30,3 +33,28 @@ def cfind(path, include_dirs=True):
     return t
 
 
+def set_git_user(joe=True):
+    if joe:
+        user = 'Original Joe'
+        email = 'joe@origin.al'
+    else:
+        user = 'Not Joe'
+        email = 'not@joe.xxx'
+    git('config', 'user.name', user)
+    git('config', 'user.email', email)
+
+
+def create_rdoupate_repo(tmpdir):
+    updates = py.path.local(ASSETS_DIR).join(UPDATES_DIR)
+    repo = tmpdir.join('rdo-update')
+    updates.copy(repo.join(UPDATES_DIR))
+    with repo.as_cwd():
+        git('init')
+        set_git_user(joe=True)
+        git('add', '.')
+        git('rm', '--cached', 'updates/arch.yml')
+        git('commit', '-m', 'Look at all these updates by Joe!')
+        set_git_user(joe=False)
+        git('add', 'updates/arch.yml')
+        git('commit', '-m', 'This is not from Joe, bah')
+    return repo
