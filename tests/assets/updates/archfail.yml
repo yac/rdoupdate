@@ -8,7 +8,7 @@ builds:
      source: dummy
      repo: icehouse
      dist: fedora-20
-     arch: noarch, lolilol, dummy
+     arch: noarch, lolilol, src
    - id: orange-2.0-2.el6
      source: dummy
      repo: icehouse

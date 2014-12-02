@@ -1,1 +1,2 @@
 DEFAULT_BUILD_SOURCE = 'koji'
+DEFAULT_BUILD_ARCH = 'noarch'

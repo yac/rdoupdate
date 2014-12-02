@@ -47,12 +47,12 @@ class BuildSource(object):
     def _filter_arch(self, build, files):
         if not build.arch:
             return
-        archs = re.findall("[^\s,]+", build.arch)
+        archs = re.findall("[^\s,|]+", 'src,' + build.arch)
         some_valid = False
         for f in files:
             valid = False
             for arch in archs:
-                if re.search(re.escape(arch) + '(?:\.src)?\.rpm$', f):
+                if re.search(re.escape(arch) + '\.rpm$', f):
                     valid = True
                     break
             if valid:
