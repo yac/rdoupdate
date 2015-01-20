@@ -1,3 +1,4 @@
 include README.md
+include requirements.txt
 exclude rdoupdate/bsources/copr*
 exclude rdoupdate/bsources/brew*

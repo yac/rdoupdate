@@ -12,6 +12,9 @@ setuptools.setup(
     author_email='jruzicka@redhat.com',
     url='https://github.com/yac/rdoupdate',
     packages=['rdoupdate', 'rdoupdate.utils', 'rdoupdate.bsources'],
+    install_requires=[
+        'PyYAML',
+    ],
     entry_points={
         "console_scripts": ["rdoupdate = rdoupdate.shell:main"]
     }
