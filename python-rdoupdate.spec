@@ -1,5 +1,5 @@
 Name:             python-rdoupdate
-Version:          0.13
+Version:          0.13.1
 Release:          1%{?dist}
 Summary:          Manipulation and validation of YAML update files
 
@@ -43,6 +43,9 @@ update data and is able to extract such file from a git repo.
 %{python_sitelib}/*.egg-info
 
 %changelog
+* Tue Jan 20 2015 Jakub Ruzicka <jruzicka@redhat.com> 0.13.1-1
+- Update to upstream 0.13.1
+
 * Tue Dec 02 2014 Jakub Ruzicka <jruzicka@redhat.com> 0.13-1
 - Update to upstream 0.13
 
