@@ -22,12 +22,17 @@ KOJI_BASE_URL = 'http://kojipkgs.fedoraproject.org/work/'
 class KojiSource(BuildSource):
     name = 'koji'
     tool = 'koji'
+    args = []
+
+    def koji(self, *kojicmd, **kwargs):
+        cmd = [self.tool] + self.args + list(kojicmd)
+        return run(*cmd, **kwargs)
 
     def _download_build(self, build):
-        run(self.tool, 'download-build', build.id)
+        self.koji('download-build', build.id)
 
     def _build_available(self, build):
-        o = run(self.tool, 'buildinfo', build.id, fatal=False)
+        o = self.koji('buildinfo', build.id, fatal=False)
         if not o.success:
             return ErrorBool(err=o)
         if o.find("COMPLETE") == -1:
