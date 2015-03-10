@@ -1,12 +1,12 @@
 Name:             python-rdoupdate
 Version:          0.14
-Release:          1%{?dist}
+Release:          2%{?dist}
 Summary:          Manipulation and validation of YAML update files
 
 Group:            Development/Languages
 License:          ASL 2.0
 URL:              https://github.com/yac/rdoupdate
-Source0:          rdoupdate-%{version}.tar.gz
+Source0:          https://pypi.python.org/packages/source/r/rdoupdate/rdoupdate-%{version}.tar.gz
 
 BuildArch:        noarch
 
@@ -31,19 +31,31 @@ update data and is able to extract such file from a git repo.
 %prep
 %setup -q -n rdoupdate-%{version}
 
+
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
+
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
+
 
 %files
 %doc README.md
 %{_bindir}/rdoupdate
-%{python_sitelib}/rdoupdate
-%{python_sitelib}/*.egg-info
+%license LICENSE
+%{python2_sitelib}/rdoupdate
+%{python2_sitelib}/*.egg-info
+
 
 %changelog
+* Thu Sep 17 2015 Jakub Ruzicka <jruzicka@redhat.com> 0.14-2
+- Improve .spec file
+- Use versioned python macros
+- Inlcude LICENSE
+- Use PyPI tarball
+- Improve spacing
+
 * Wed Feb 04 2015 Jakub Ruzicka <jruzicka@redhat.com> 0.14-1
 - Update to upstream 0.14
 
