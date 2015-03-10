@@ -15,6 +15,7 @@ BuildRequires:    python2-devel
 
 Requires:         python-setuptools
 Requires:         python-argparse
+Requires:         python-urlgrabber
 Requires:         PyYAML
 Requires:         git-core
 

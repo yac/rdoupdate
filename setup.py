@@ -14,6 +14,7 @@ setuptools.setup(
     packages=['rdoupdate', 'rdoupdate.utils', 'rdoupdate.bsources'],
     install_requires=[
         'PyYAML',
+        'urlgrabber',
     ],
     entry_points={
         "console_scripts": ["rdoupdate = rdoupdate.shell:main"]
